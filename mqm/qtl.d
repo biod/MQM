@@ -34,10 +34,10 @@ class SingleQTL{
 double[][] createdesignmatrix(int[][] genotypes, size_t marker, int[] geno_cov = [], bool intercept = true){
   double[][] dm;
   dm.length = genotypes[0].length;
-  size_t ncols = 1 + geno_cov.length + cast(int)intercept;
+  size_t ncols = 1 + geno_cov.length + cast(size_t)(intercept);
   for(size_t v=0; v < ncols; v++){
     for(size_t i=0; i < genotypes[0].length; i++){
-      dm[i].length = 1 + geno_cov.length + cast(int)intercept;
+      dm[i].length = 1 + geno_cov.length + cast(size_t)(intercept);
       if(intercept && v==0){
         dm[i][v] = 1.0;
       }else{
