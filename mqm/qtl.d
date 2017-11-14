@@ -31,7 +31,7 @@ class SingleQTL{
     return lodmatrix;
   }
 }
-double[][] createdesignmatrix(int[][] genotypes, int marker, int[] geno_cov = [], bool intercept = true){
+double[][] createdesignmatrix(int[][] genotypes, size_t marker, int[] geno_cov = [], bool intercept = true){
   double[][] dm;
   dm.length = genotypes[0].length;
   size_t ncols = 1 + geno_cov.length + cast(int)intercept;
@@ -44,7 +44,7 @@ double[][] createdesignmatrix(int[][] genotypes, int marker, int[] geno_cov = []
         if(v==(dm[i].length-1)){
           dm[i][v] = cast(double) genotypes[marker][i];
         }else{
-          uint cov = v - cast(uint) intercept;
+          size_t cov = v - intercept;
           dm[i][v] = cast(double) genotypes[geno_cov[cov]][i];
         }
       }
