@@ -1,0 +1,17 @@
+{
+	"name": "mqm",
+	"description": "Multiple QTL mapping.",
+	"authors": ["Danny Arends"],
+	"homepage": "http://www.dannyarends.nl",
+	"importPaths": ["mqm"],
+	"sourcePaths": ["mqm"],
+	"mainSourceFile": "mqm/main.d",
+	"targetPath": "",
+	"targetName": "mqm",
+	"configurations": [
+  {
+		"name": "default",
+		"targetType": "executable",
+	}
+	]
+}
