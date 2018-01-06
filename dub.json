@@ -6,7 +6,7 @@
 	"importPaths": ["mqm"],
 	"sourcePaths": ["mqm"],
 	"mainSourceFile": "mqm/main.d",
-	"targetPath": "",
+	"targetPath": "bin",
 	"targetName": "mqm",
 	"configurations": [
   {
