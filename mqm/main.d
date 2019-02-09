@@ -7,19 +7,34 @@
  * First written Dec, 2011<br>
  * Written in the D Programming Language (http://www.digitalmars.com/d)
  **********************************************************************/
-import std.stdio, std.math, std.datetime, core.time;
-import mqm.regression, mqm.support;
+import std.stdio, std.math, std.datetime, core.time, std.getopt;
+import mqm.regression;
+import mqm.support;
+import mqm.io;
 
-void main(string[] args){
-  writefln("Multiple linear regression in D\n");
-  double[][] designmatrix = [[1,1,2],[1,1,2],[1,2,1],[1,2,1],[1,2,2],[1,2,1]];
-  double[]   trait = [4,1,3,7,5,6];
-  double[]   weight = [1,1,1,1,1,1];
-  int[]      nullmodellayout = [1,1];  //The D[][1] is dropped from the model to test its predictive value 
-  for(size_t i = 0; i < designmatrix.length; i++){
-    writefln("[%s] = %s",trait[i],designmatrix[i]);
+void parseCommandLine(string[] args) {
+    try {
+      getopt(args,
+             "v|verbose", &(stdoutverbose)
+            );
+    } catch (Exception e) {
+      err("Exception: '%s'", e.msg);
+    }
+}
+
+void main (string[] args) {
+  args.parseCommandLine();
+  info("Multiple QTL mapping\n");
+
+  double[][] designmatrix = [[1.0f, 1.0f, 2.0f], [1.0f, 1.0f, 2.0f], [1.0f, 2.0f, 1.0f], [1.0f, 2.0f, 1.0f], [1.0f, 2.0f, 1.0f], [1.0f, 2.0f, 1.0f]];
+  double[]   trait = [4.0f, 1.0f, 3.0f, 7.0f, 5.0f, 6.0f];
+  double[]   weight = [1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f];
+  int[]      nullmodellayout = [0, 1];  //The D[][1] is dropped from the model to test its predictive value 
+  for (size_t i = 0; i < designmatrix.length; i++) {
+    info("[%s] = %s", trait[i], designmatrix[i]);
   }
-  writeln();
-  writefln("LOD = %s",toLOD(mregression(designmatrix,trait,weight,nullmodellayout,0)));
+  Model[2] models = modelregression(designmatrix, weight, trait, nullmodellayout);
+  info("weight = %s", weight);
+  info("LOD = %s", models.lod());
 }
 

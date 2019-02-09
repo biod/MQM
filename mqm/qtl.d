@@ -10,27 +10,25 @@
 module mqm.qtl;
 
 import std.stdio, std.math, std.datetime;
-import mqm.matrix, mqm.vector;
+import mqm.matrix, mqm.vector, mqm.io;
 import mqm.support, mqm.regression;
 
-class SingleQTL{
-  double[][] analyse(int[][] genotypes, double[][] phenotypes, int[] geno_cov = [], bool verbose = true){
-    SysTime stime = Clock.currTime();
-    double[][] lodmatrix = newmatrix!double(phenotypes.length, genotypes.length , 0.0);
-    if(verbose) write(" ");
-    for(size_t p = 0; p < phenotypes.length; p++){
-      for(size_t m = 0; m < genotypes.length; m++){
-        double[] w = newvector!double(phenotypes[0].length, 1.0);
-        int[] nm   = newvector!int(1,1);
-        lodmatrix[p][m] = toLOD(mregression(createdesignmatrix(genotypes, cast(int)m, geno_cov), phenotypes[p], w, nm, false));
-      }
-      if(verbose) write(".");
-      stdout.flush();
+double[][] mapQTL (int[][] genotypes, double[][] phenotypes, int[] geno_cov = []) {
+  SysTime stime = Clock.currTime();
+  double[][] lodmatrix = newmatrix!double(phenotypes.length, genotypes.length , 0.0);
+  for (size_t p = 0; p < phenotypes.length; p++) {
+    for (size_t m = 0; m < genotypes.length; m++) {
+      double[] w = newvector!double(phenotypes[0].length, 1.0);
+      int[] nm   = newvector!int(1,1);
+      Model[2] models = modelregression(createdesignmatrix(genotypes, cast(int)m, geno_cov), phenotypes[p], w, nm);
+      lodmatrix[p][m] = lod(models);
     }
-    if(verbose) writeln("\n - Mapped QTL: ",(Clock.currTime()-stime).total!"msecs"() / 1000.0," seconds");
-    return lodmatrix;
+    stdout.flush();
   }
+  info("\n - Mapped QTL: %s seconds", (Clock.currTime() - stime).total!"msecs"() / 1000.0);
+  return lodmatrix;
 }
+
 double[][] createdesignmatrix(int[][] genotypes, size_t marker, int[] geno_cov = [], bool intercept = true){
   double[][] dm;
   dm.length = genotypes[0].length;

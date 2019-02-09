@@ -60,18 +60,18 @@ bool LUdecompose(double[][] m, size_t dim, int[] ndx, int *d) {
   return true;
 }
 
-void LUsolve(in double[][] lu, size_t dim, in int[] ndx, double[] b) {
-  size_t r, c;
+@nogc void LUsolve(in double[][] lu, size_t dim, in int[] ndx, ref double[] b) nothrow {
+  int r, c;
   double sum;
-  for(r = 0; r < dim; r++){
+  for (r=0; r<dim; r++) {
     sum=b[ndx[r]];
     b[ndx[r]]=b[r];
-    for (c=0; c<r; c++) sum-= lu[r][c]*b[c];
+    for (c=0; c < r; c++) sum-= lu[r][c]*b[c];
     b[r]=sum;
   }
-  for(r = (dim-1); r > -1; r--){
+  for (r = cast(int)(dim)-1; r>-1; r--) {
     sum=b[r];
-    for(c=r+1; c<dim; c++) sum-= lu[r][c]*b[c];
+    for (c=r+1; c<dim; c++) sum-= lu[r][c]*b[c];
     b[r]=sum/lu[r][r];
   }
 }

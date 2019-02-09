@@ -49,7 +49,7 @@ pure T[][] absmatrix(T)(in T[][] i){
   return m;
 }
 
-pure T[] unlist(T)(in T[][] i){
+pure T[] unlist(T)(in T[][] i) {
   T[] m;
   for(size_t r=0;r<i.length;r++){
     for(size_t c=0;c<i[0].length;c++){
@@ -59,14 +59,14 @@ pure T[] unlist(T)(in T[][] i){
   return m;
 }
 
-pure T[][] asmatrix(T)(in T[] i){
+pure T[][] asmatrix(T)(in T[] i) {
   T[][] m; T[] row;
   for(size_t idx = 0; idx < i.length; idx++){ row ~= i[idx]; }
   m ~= row;
   return m;
 }
 
-pure T[][] vectortomatrix(T)(size_t nrow, size_t ncol, in T[] invector){
+pure T[][] vectortomatrix(T)(size_t nrow, size_t ncol, in T[] invector) {
   T[][] outmatrix = newmatrix!T(nrow, ncol);
   for(size_t r=0; r<nrow; r++){
     for(size_t c=0; c<ncol; c++){
@@ -77,7 +77,7 @@ pure T[][] vectortomatrix(T)(size_t nrow, size_t ncol, in T[] invector){
 }
 
 
-pure T[][] translate(T)(in T[][] i){
+pure T[][] transpose(T)(in T[][] i) {
   if(i.length == 0) throw new Exception("Matrix needs to be at least of dim 1,1");
   T[][] m = newmatrix!T(i[0].length, i.length);
   for(size_t r=0;r<i.length;r++){
