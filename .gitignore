@@ -1,3 +1,4 @@
 bin/
 mqm.exe
+dub.selections.json
 .dub
