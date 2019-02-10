@@ -26,9 +26,9 @@ Model[2] modelregression(in double[][] x, ref double[] w, double[] y, in int[] n
   if(!sumvector!double(x[0]) == y.length) warn("NOTE: No estimate of constant in model");
 
   Model model  = likelihoodbyem(x, w, y);
-  info("Model: %s", model);
+  trace("Model: %s", model);
   Model nmodel = regression(x, w, y, nullmodel);
-  info("NULL-Model: %s", nmodel);
+  trace("NULL-Model: %s", nmodel);
   return [model, nmodel];
 }
 
@@ -43,7 +43,7 @@ Model likelihoodbyem(in double[][] x, ref double[] w, in double[] y){
   double logLprev    = 0.0f;
 
   Model f;
-  while ((emcycle<maxemcycles) && (delta > 1.0e-10)){
+  while ((emcycle<maxemcycles) && (delta > 1.0e-9)){
     f = regression(x, w, y);
     for (size_t s = 0; s < nsamples; s++) {
       if(w[s] != 0) w[s] = (w[s] + f.Fy[s])/w[s];
@@ -52,7 +52,7 @@ Model likelihoodbyem(in double[][] x, ref double[] w, in double[] y){
     logLprev=f.logL;
     emcycle++;
   }
-  info("EM took %d/%d cycles", emcycle, maxemcycles);
+  trace("EM took %d/%d cycles", emcycle, maxemcycles);
   return f;
 }
 

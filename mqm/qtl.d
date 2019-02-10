@@ -9,44 +9,45 @@
  **********************************************************************/
 module mqm.qtl;
 
-import std.stdio, std.math, std.datetime;
-import mqm.matrix, mqm.vector, mqm.io;
-import mqm.support, mqm.regression;
+import std.conv, std.stdio, std.math, std.datetime;
+import mqm.matrix, mqm.vector, mqm.io, mqm.support, mqm.regression;
 
-double[][] mapQTL (int[][] genotypes, double[][] phenotypes, int[] geno_cov = []) {
-  SysTime stime = Clock.currTime();
-  double[][] lodmatrix = newmatrix!double(phenotypes.length, genotypes.length , 0.0);
-  for (size_t p = 0; p < phenotypes.length; p++) {
-    for (size_t m = 0; m < genotypes.length; m++) {
-      double[] w = newvector!double(phenotypes[0].length, 1.0);
-      int[] nm   = newvector!int(1,1);
-      Model[2] models = modelregression(createdesignmatrix(genotypes, cast(int)m, geno_cov), phenotypes[p], w, nm);
-      lodmatrix[p][m] = lod(models);
-    }
-    stdout.flush();
-  }
-  info("\n - Mapped QTL: %s seconds", (Clock.currTime() - stime).total!"msecs"() / 1000.0);
-  return lodmatrix;
-}
-
-double[][] createdesignmatrix(int[][] genotypes, size_t marker, int[] geno_cov = [], bool intercept = true){
-  double[][] dm;
-  dm.length = genotypes[0].length;
-  size_t ncols = 1 + geno_cov.length + cast(size_t)(intercept);
-  for(size_t v=0; v < ncols; v++){
-    for(size_t i=0; i < genotypes[0].length; i++){
-      dm[i].length = 1 + geno_cov.length + cast(size_t)(intercept);
-      if(intercept && v==0){
-        dm[i][v] = 1.0;
+double[][] createDesignmatrix(Genome g, Phenome p, string[] markers, string[] individuals, string[] covariates = []) {
+  double[][] designmatrix;
+  //writefln("Creating designmatrix: %s x %s", individuals.length, ncol);
+  foreach (individual; individuals) {
+    double[] row = [1.0];
+    foreach (marker; markers) {
+      if(g[marker][individual] == "1"){
+        row ~= -1;
       }else{
-        if(v==(dm[i].length-1)){
-          dm[i][v] = cast(double) genotypes[marker][i];
-        }else{
-          size_t cov = v - intercept;
-          dm[i][v] = cast(double) genotypes[geno_cov[cov]][i];
-        }
+        row ~= 1;
       }
     }
+    designmatrix ~= row;
   }
-  return dm;
+  return designmatrix;
 }
+
+double[] createWeights(string[] individuals) {
+  double[] weights;
+  foreach(individual; individuals) {
+    weights ~= 1.0f;
+  }
+  return(weights);
+}
+
+void printDM(double[][] designmatrix, double[] trait) {
+  for (size_t i = 0; i < designmatrix.length; i++) {
+    trace("[%s] = %s", trait[i], designmatrix[i]);
+  }
+}
+
+double[] createPheno(Phenome p, string phenotype, string[] individuals) {
+  double[] pheno;
+  foreach(individual; individuals) {
+    pheno ~= to!double(p[phenotype][individual]);
+  }
+  return(pheno);
+}
+
