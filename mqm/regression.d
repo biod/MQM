@@ -21,28 +21,27 @@ import mqm.support;
 Model[2] modelregression(in double[][] x, ref double[] w, double[] y, in int[] nullmodel = [1]){
   if(x.length != w.length) abort(format("No weights for individuals found", x.length, w.length));
   if(x.length != y.length) abort("No y variable for some individuals found"); 
-  
-  if(!sumvector!double(x[0]) == y.length) warning("NOTE: No estimate of constant in model");
+
+  if(!sum!double(x[0]) == y.length) warning("NOTE: No estimate of constant in model");
 
   Model model  = likelihoodbyem(x, w, y);
   trace("Model: %s", model);
   Model nmodel = regression(x, w, y, nullmodel);
   trace("NULL-Model: %s", nmodel);
-  return [model, nmodel];
+  return([nmodel, model]);
 }
 
 // Expectation minimization computation of a model
-Model likelihoodbyem(in double[][] x, ref double[] w, in double[] y){
+Model likelihoodbyem(in double[][] x, ref double[] w, in double[] y, size_t maxemcycles = 1000){
   size_t nvariables = x[0].length;
   size_t nsamples   = x.length;
-  size_t maxemcycles = 1000;
   size_t emcycle     = 0;
   double delta       = 1.0f;
   double logL        = 0.0f;
   double logLprev    = 0.0f;
 
   Model f;
-  while ((emcycle<maxemcycles) && (delta > 1.0e-9)){
+  while ((emcycle < maxemcycles) && (delta > 1.0e-9)){
     f = regression(x, w, y);
     for (size_t s = 0; s < nsamples; s++) {
       if(w[s] != 0) w[s] = (w[s] + f.Fy[s])/w[s];

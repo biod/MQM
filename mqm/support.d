@@ -20,6 +20,7 @@ import mqm.LUdecomposition;
 immutable size_t NULL = 0;
 immutable size_t MODEL = 1;
 
+/* Stats Structure */
 struct Stats {
   double variance = 0.0;
   double[] fit;
@@ -32,12 +33,13 @@ struct Stats {
   }
 }
 
+/* Model Structure */
 struct Model {
-  double   logL = 0.0;
+  double logL = 0.0; // Raw loglikelihood of the model
   double[] Fy;
   double[] indL;
   double[] params;
-  Stats    stats;
+  Stats stats;
 
   void toString(scope void delegate(const(char)[]) sink) const {
     put(sink, format("logL: %f\n", logL));
@@ -48,24 +50,32 @@ struct Model {
   }
 }
 
-pure double Lnormal(double residual, double variance){
+/* Log normal distribution */
+@nogc pure double Lnormal (double residual, double variance) nothrow {
   return exp(-pow(residual / sqrt(variance), 2.0)/2.0 - log(sqrt(2.0 * acos(-1.0) * variance)));
 }
 
-pure double lod(in Model model, in Model nullmodel){ return(abs((2.0 * model.logL) - (2.0 * nullmodel.logL)) / 4.60517); }
-pure double lod(in Model[2] models){ return lod(models[MODEL], models[NULL]); }
+/* LOD score between a two models (M, H0) */
+@nogc pure double lod(in Model model, in Model nullmodel) nothrow { 
+  return(abs((2.0 * model.logL) - (2.0 * nullmodel.logL)) / 4.60517);
+}
 
+/* LOD score between a two models (M, H0) */
+@nogc pure double lod(in Model[2] models) nothrow { return lod(models[MODEL], models[NULL]); }
+
+/* Calculate the loglikelihood based the deviation from the weighted residuals to the variance */
 pure Model calcloglik(size_t nsamples, in double[] residual, in double[] w, real variance, bool verbose = true){
   Model f = Model(0.0, newvector!double(nsamples, 0.0), newvector!double(nsamples, 0.0));
 
   for (size_t i=0; i < nsamples; i++) {
-    f.Fy[i]  = Lnormal(residual[i], variance);
-    f.indL[i]  += w[i] * f.Fy[i];
-    f.logL   += log(f.indL[i]);
+    f.Fy[i] = Lnormal(residual[i], variance);
+    f.indL[i] += w[i] * f.Fy[i];
+    f.logL += log(f.indL[i]);
   }
   return f;
 }
 
+/* Calculate the statistics of the model (fit, residuals, variance) */
 pure Stats calcstats(size_t nv, size_t ns, in double[][] xt, in double[] xtwy, in double[] y, in double[] w){
   Stats s = Stats(0.0, newvector!double(ns, 0.0), newvector!double(ns, 0.0));
 
@@ -82,6 +92,7 @@ pure Stats calcstats(size_t nv, size_t ns, in double[][] xt, in double[] xtwy, i
   return s;
 }
 
+/* Calculate the estimated beta parameters for the regression */
 double[] calcparams(size_t nvariables, size_t nsamples, in double[][] xt, in double[] w, in double[] y){
   int d = 0;
   double xtwj;

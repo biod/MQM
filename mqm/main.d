@@ -14,6 +14,7 @@ import mqm.regression;
 import mqm.support;
 import mqm.io;
 import mqm.qtl;
+import mqm.vector;
 
 public: __gshared string phenome = "data/hyper_pheno.txt";
 public: __gshared string genome = "data/hyper_geno.txt";
@@ -54,10 +55,10 @@ void main (string[] args) {
   file.writefln("chr\tpos\tlod\teffect(s)");
   foreach (marker; m.markers()) {
     double[][] designmatrix = g.createDesignmatrix(p, [marker], ind);
-    double[] weight = createWeights(p["bp"].individuals);
+    double[] weight = newvector!double(p["bp"].individuals.length, 1.0f);
     int[] nullmodellayout = [1];  //The D[][1] is dropped from the model to test its predictive value 
     Model[2] models = modelregression(designmatrix, weight, trait, nullmodellayout);
-    file.writefln("%s\t%s\t%s\t%.2f\t%s", marker, m.chromosome(marker), m.position(marker), models.lod(), models[0].params[1 .. ($)]);
+    file.writefln("%s\t%s\t%s\t%.2f\t%s", marker, m.chromosome(marker), m.position(marker), models.lod(), models[MODEL].params[1 .. ($)]);
   }
 }
 
