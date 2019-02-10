@@ -12,7 +12,7 @@ module mqm.LUdecomposition;
 import std.stdio;
 import std.math;
 
-import mqm.errors;
+import mqm.io;
 import mqm.vector;
 
 import mqm.support;

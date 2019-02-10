@@ -2,8 +2,8 @@
  * \file src/plugins/regression/qtl.d
  * \brief Single marker QTL mapping in D 2.0
  *
- * <i>Copyright (c) 1991-2012</i>Ritsert C. Jansen, Danny Arends, Pjotr Prins, Karl W. Broman<br>
- * Last modified May, 2012<br>
+ * <i>Copyright (c) 1991-2019</i>Ritsert C. Jansen, Danny Arends, Pjotr Prins, Karl W. Broman<br>
+ * Last modified Feb, 2019<br>
  * First written 1991<br>
  * Written in the D Programming Language (http://www.digitalmars.com/d)
  **********************************************************************/
@@ -18,9 +18,9 @@ double[][] createDesignmatrix(Genome g, Phenome p, string[] markers, string[] in
   foreach (individual; individuals) {
     double[] row = [1.0];
     foreach (marker; markers) {
-      if(g[marker][individual] == "1"){
+      if (g[marker][individual] == "1") {
         row ~= -1;
-      }else{
+      } else {
         row ~= 1;
       }
     }
@@ -31,7 +31,7 @@ double[][] createDesignmatrix(Genome g, Phenome p, string[] markers, string[] in
 
 double[] createWeights(string[] individuals) {
   double[] weights;
-  foreach(individual; individuals) {
+  foreach (individual; individuals) {
     weights ~= 1.0f;
   }
   return(weights);

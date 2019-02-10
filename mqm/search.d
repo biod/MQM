@@ -9,87 +9,19 @@
  **********************************************************************/
 module mqm.search;
 
-import std.stdio, std.conv, std.string, std.random;
+import std.conv;
+import std.string;
+import std.random;
+import std.stdio;
 
-pure T[] range(T)(T start, size_t length){
-  T[] array;
-  for(T i = 0; i < length; i++){ array ~= start+i; }
-  return array;
-}
+import mqm.io;
 
-pure T[] array(T)(size_t length, T value){
-  T[] array;
-  for(size_t i = 0; i < length; i++){ array ~= value; }
-  return array;
-}
-
-T[] randomrange(T)(T start, size_t length, size_t number){
-  assert(number < length);
-  return randomrange!T(range(start,length), number);
-}
-
-T[] randomrange(T)(T[] range, size_t number){
-  assert(number < range.length);
-  T[] s;
-  foreach(e;randomSample(range, number)){ s ~= e; }
-  return s;
-}
-
-@nogc pure T[] removearray(T)(in T[] haystack, size_t idx = -1) {
-  if(idx == -1) return haystack;
-  T[] nobjs;
-  nobjs.length = haystack.length;
-  for (size_t x=0; x < haystack.length; x++) {
-    if(idx != x) nobjs[x] = haystack[x];
-  }
-  return nobjs;
-}
-
-@nogc pure bool searcharray(T)(in T[] haystack, T needle) {
-  return(getIndex(haystack,needle) != -1);
-}
-
-pure size_t getIndex(T)(in T[] haystack, T needle){
-  foreach(idx, T s; haystack){
-    if(s==needle) return idx;
-  }
-  return -1;
-}
- 
-pure bool binsearcharray(T)(in T[] haystack, T needle) {
-  return(getIndexB(haystack,needle) != -1);
-}
-
-pure size_t getIndexB(T)(in T[] haystack, T needle) {
-  size_t first = 0;
-  size_t last = (haystack.length-1);
-  while (first <= last) {
-    if(last==first){
-      if(needle==haystack[first]) return first;
-      return -1;
-    }
-    size_t mid = (first + last) / 2;
-    if (needle > haystack[mid]){
-      first = mid + 1;
-    }else if (needle < haystack[mid]){
-      last = mid - 1;
-    }else{
-      return mid;
-    }
-  }
-  return -1;
-}
-
-unittest{
+unittest {
   writeln("Unit test: ",__FILE__);
-  try{
-    assert(array!int(5,3)[2] == 3);
-    assert(array!int(5,3).length == 5);
-    assert(range!int(5,3).length == 3);
-    assert(range!int(5,3)[2] == 7);
+  try {
     writeln("OK: ",__FILE__);  
-  }catch(Throwable e){
-    string err = to!string(e).split("\n")[0];
-    writefln(" - %s\nFAILED: %s",err,__FILE__);  
+  } catch (Throwable e) {
+    error(" - %s\nFAILED: %s", to!string(e), __FILE__);  
   }
 }
+

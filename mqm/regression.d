@@ -23,7 +23,7 @@ Model[2] modelregression(in double[][] x, ref double[] w, double[] y, in int[] n
   if(x.length != w.length) abort(format("No weights for individuals found", x.length, w.length));
   if(x.length != y.length) abort("No y variable for some individuals found"); 
   
-  if(!sumvector!double(x[0]) == y.length) warn("NOTE: No estimate of constant in model");
+  if(!sumvector!double(x[0]) == y.length) warning("NOTE: No estimate of constant in model");
 
   Model model  = likelihoodbyem(x, w, y);
   trace("Model: %s", model);
@@ -66,7 +66,7 @@ Model regression(in double[][] x, in double[] w, in double[] y, in int[] nullmod
   if (nullmodel.length != 0) {                     // The nullmodel has always 1 parameter
     for (size_t i = 1; i < nvariables; i++) {      // less Y = M + F1..Fn + Error, (The first parameter is the estimated mean)
       if(i > nullmodel.length) {
-        warn("Null model too short, %d != %d", nullmodel.length, (nvariables-1));
+        warning("Null model too short, %d != %d", nullmodel.length, (nvariables-1));
         break;
       }
       if(nullmodel[(i-1)] == 1) XtWY[i] = 0.0;     // Set the estimated beta to 0

@@ -18,7 +18,7 @@ import std.stdio, std.conv, std.string, std.math, std.random;
  * \param r any type any length vector<br>
  * \return The sum
  */
-pure T sum(T)(in T[] r){
+@nogc pure T sum(T)(in T[] r) nothrow {
   T s = 0;
   foreach(T e; r){ s += e; }
   return s;
@@ -31,7 +31,7 @@ pure T sum(T)(in T[] r){
  * \param r any type any length vector<br>
  * \return The mean
  */
-pure T mean(T)(in T[] r){
+@nogc pure T mean(T)(in T[] r) nothrow {
   T mean = 0;
   for(size_t i = 0; i < r.length; i++){
     mean += (data[i] - mean) / (i + 1);
@@ -46,7 +46,7 @@ pure T mean(T)(in T[] r){
  * \param r any type any length vector<br>
  * \return The min or max based on op
  */
-pure T minmax(string op, T)(in T[] r){
+@nogc pure T minmax(string op, T)(in T[] r) nothrow {
   assert(r.length >= 0);
   T best = T.min;
   foreach(e; r){
