@@ -11,12 +11,9 @@ module mqm.io;
 
 import core.stdc.stdlib : exit;
 
-import std.algorithm;
-import std.conv;
-import std.stdio;
-import std.string;
-import std.array;
-import std.math;
+import std.stdio : File, stderr, writefln;
+import std.string : chomp, format;
+import std.array : split;
 
 /* Thread shared verbose level set at startup */
 public: __gshared size_t stdoutverbose = 1;
@@ -53,33 +50,24 @@ void warning(A...)(const string fmt, auto ref A args) {
     writefln("[WARN]  " ~ fmt, args);
 }
 
-/* Abort because an expectation isn't satisfied (-2) */
-void expected(in string s, in string o){
-  abort(format("'%s' expected, but found: '%s'", s, o), -2);
-}
-
-/* Abort because an identifier is undefined (-3) */
-void undefined(in string name){
-  abort(format("Undefined identifier: %s", name), -3);
-}
-
 /* Abort because an identifier is duplicated (-4) */
-void duplicate(in string name){
-  abort(format("Duplicate identifier: %s", name), -4);
+void expect(A...)(bool cond, string msg, auto ref A args) {
+  if (!cond) abort(format(msg, args), -1);
 }
 
-/* DataStore holds Genotypes, Phenotypes and Genetic Map */
+/* DataStore holds Genome, Phenome, and Map */
 struct DataStore {
   string[string][string] data; // Data is accessed by string rownames and colnames (tripple store)
   alias data this; // DataStore object is the data
 }
 
+/* Aliases to Genome, Phenome, and Map */
 alias DataStore Genome;
 alias DataStore Phenome;
 alias DataStore Map;
 
 /* Load a tab separated file into the DataStore */
-string[string][string] loadFile(string path) {
+string[string][string] loadFile(in string path) {
   string[string][string] content;
   auto file = File(path); // Open for reading
   string line;

@@ -9,14 +9,13 @@
  **********************************************************************/
 module mqm.matrix;
 
-import std.stdio, std.conv, std.math;
-import mqm.vector;
+import mqm.vector : newvector;
 
 /* Create a new matrix, holding T init as value */
 pure T[][] newmatrix(T) (size_t nrow, size_t ncol, T init = T.init) {
   T[][] x;
-  x.length=nrow;
-  for(size_t i=0;i < nrow;i++){
+  x.length = nrow;
+  for (size_t i = 0; i < nrow; i++) {
     x[i] = newvector!T(ncol,init);
   }
   return x;

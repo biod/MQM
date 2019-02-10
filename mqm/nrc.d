@@ -9,8 +9,10 @@
  **********************************************************************/
 module mqm.nrc;
 
-import std.stdio, std.math, std.mathspecial;
-import mqm.io;
+import std.math : fabs;
+import std.mathspecial : betaIncomplete;
+
+import mqm.io : trace;
 
 double inverseF(int df1, int df2, double alfa, size_t maxiter = 1000) {
   double prob = 0.0, minF = 0.0, maxF = 100.0, halfway = 50.0, absdiff = 1.0;

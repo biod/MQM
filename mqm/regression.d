@@ -9,20 +9,20 @@
  **********************************************************************/
 module mqm.regression;
  
-import std.math;
+import std.math : fabs;
 import std.string : format;
 
-import mqm.vector;
-import mqm.matrix;
-import mqm.io;
-import mqm.support;
+import mqm.vector : sum;
+import mqm.matrix : transpose;
+import mqm.io : abort, warning, trace;
+import mqm.support : calcparams, calcstats, calcloglik, Model, Stats;
 
 // Model regression (creates a design matrix)
 Model[2] modelregression(in double[][] x, ref double[] w, double[] y, in int[] nullmodel = [1]){
   if(x.length != w.length) abort(format("No weights for individuals found", x.length, w.length));
   if(x.length != y.length) abort("No y variable for some individuals found"); 
 
-  if(!sum!double(x[0]) == y.length) warning("NOTE: No estimate of constant in model");
+  if(!x[0].sum() == y.length) warning("NOTE: No estimate of constant in model");
 
   Model model  = likelihoodbyem(x, w, y);
   trace("Model: %s", model);

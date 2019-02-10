@@ -9,13 +9,13 @@
  **********************************************************************/
 module mqm.support;
 
-import std.conv;
-import std.range;
-import std.stdio, std.math;
-import std.format;
-import std.string;
-import mqm.vector, mqm.matrix, mqm.io;
-import mqm.LUdecomposition;
+import std.range : put;
+import std.math : log, exp, pow, abs, sqrt, acos;
+import std.string : format;
+
+import mqm.vector : newvector;
+import mqm.matrix : newmatrix;
+import mqm.LUdecomposition : LUdecompose, LUsolve;
 
 immutable size_t NULL = 0;
 immutable size_t MODEL = 1;
@@ -52,12 +52,12 @@ struct Model {
 
 /* Log normal distribution */
 @nogc pure double Lnormal (double residual, double variance) nothrow {
-  return exp(-pow(residual / sqrt(variance), 2.0)/2.0 - log(sqrt(2.0 * acos(-1.0) * variance)));
+  return exp(-pow(residual / sqrt(variance), 2.0f) / 2.0f - log(sqrt(2.0 * acos(-1.0f) * variance)));
 }
 
 /* LOD score between a two models (M, H0) */
 @nogc pure double lod(in Model model, in Model nullmodel) nothrow { 
-  return(abs((2.0 * model.logL) - (2.0 * nullmodel.logL)) / 4.60517);
+  return(abs((2.0f * model.logL) - (2.0f * nullmodel.logL)) / 4.60517f);
 }
 
 /* LOD score between a two models (M, H0) */
@@ -65,9 +65,9 @@ struct Model {
 
 /* Calculate the loglikelihood based the deviation from the weighted residuals to the variance */
 pure Model calcloglik(size_t nsamples, in double[] residual, in double[] w, real variance, bool verbose = true){
-  Model f = Model(0.0, newvector!double(nsamples, 0.0), newvector!double(nsamples, 0.0));
+  Model f = Model(0.0f, newvector!double(nsamples, 0.0f), newvector!double(nsamples, 0.0f));
 
-  for (size_t i=0; i < nsamples; i++) {
+  for (size_t i = 0; i < nsamples; i++) {
     f.Fy[i] = Lnormal(residual[i], variance);
     f.indL[i] += w[i] * f.Fy[i];
     f.logL += log(f.indL[i]);

@@ -9,8 +9,11 @@
  **********************************************************************/
 module mqm.qtl;
 
-import std.array, std.algorithm, std.conv, std.stdio, std.math, std.datetime;
-import mqm.matrix, mqm.vector, mqm.io, mqm.support, mqm.regression;
+import std.algorithm : sort, uniq, map;
+import std.array : array;
+import std.conv : to, ConvException;
+
+import mqm.io : Map, Genome, Phenome, trace;
 
 /* ChromosomeSet, holds autosomes and other genetic material (X, Y, Z, W, MT, Chloroplast) */
 struct ChromosomeSet {
@@ -26,7 +29,7 @@ struct Marker {
 }
 
 /* Get the sorted unique chromosomes provided by the map */
-ChromosomeSet chromosomes(Map m) {
+ChromosomeSet chromosomes(in Map m) {
   ChromosomeSet chrs;
   foreach (marker; m["chr"].keys) {
     try {
@@ -41,7 +44,7 @@ ChromosomeSet chromosomes(Map m) {
 }
 
 /* getMarkers returns all markers per chromosome or an unsorted list of all markers */
-Marker[] getMarkers(Map m, string chr = "1", bool sorted = true) { 
+Marker[] getMarkers(in Map m, in string chr = "1", in bool sorted = true) { 
   auto markers = m["chr"].keys;
   Marker[] onchr;
   foreach (marker; markers) {
@@ -55,7 +58,7 @@ Marker[] getMarkers(Map m, string chr = "1", bool sorted = true) {
 }
 
 /* string[] of markernames in the correct marker order */
-string[] markers(Map m) {
+string[] markers(in Map m) {
   string[] result;
   auto chrs = m.chromosomes;
   foreach (autosome; chrs.autosomes) {
@@ -70,16 +73,16 @@ string[] markers(Map m) {
 }
 
 /* Chromosome on which the marker is located */
-string chromosome(Map m, string marker) { return(m["chr"][marker]); }
+string chromosome(in Map m, in string marker) { return(m["chr"][marker]); }
 /* Position on the chromosome on which the marker is located */
-string position(Map m, string marker) { return(m["pos"][marker]); }
+string position(in Map m, in string marker) { return(m["pos"][marker]); }
 
 /* All phenotype names */
 string[] phenotypes(Phenome p) { return(p.keys); }
 /* All individuals names */
 string[] individuals(string[string] x) { return(x.keys); }
 
-/* Create the QTL design matrix */
+/* Create the QTL designmatrix */
 double[][] createDesignmatrix(Genome g, Phenome p, string[] markers, string[] individuals, string[] covariates = []) {
   double[][] designmatrix;
   //writefln("Creating designmatrix: %s x %s", individuals.length, ncol);
@@ -97,12 +100,14 @@ double[][] createDesignmatrix(Genome g, Phenome p, string[] markers, string[] in
   return designmatrix;
 }
 
+/* Print the QTL designmatrix */
 void printDesignmatrix(double[][] designmatrix, double[] trait) {
   for (size_t i = 0; i < designmatrix.length; i++) {
     trace("[%s] = %s", trait[i], designmatrix[i]);
   }
 }
 
+/* Create a phenotype vector using the order in individuals */
 double[] createPheno(Phenome p, string phenotype, string[] individuals) {
   double[] pheno;
   foreach(individual; individuals) {
