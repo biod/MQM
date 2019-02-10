@@ -21,7 +21,7 @@ void freevector(T)(ref T[] v) {
   GC.free(cast(void*)v);
 }
 
-T sumvector(T)(in T[] v){
+@nogc T sumvector(T)(in T[] v) nothrow {
   T sum = to!T(0);
   foreach(e;v){ sum += e; }
   return sum;
