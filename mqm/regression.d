@@ -12,7 +12,6 @@ module mqm.regression;
 import std.math;
 import std.string : format;
 
-import mqm.errors;
 import mqm.vector;
 import mqm.matrix;
 import mqm.io;
