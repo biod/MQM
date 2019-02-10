@@ -13,7 +13,7 @@ import std.stdio, std.conv, std.string, std.random;
 
 pure T[] range(T)(T start, size_t length){
   T[] array;
-  for(size_t i = 0; i < length; i++){ array ~= start+i; }
+  for(T i = 0; i < length; i++){ array ~= start+i; }
   return array;
 }
 
