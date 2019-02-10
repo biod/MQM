@@ -2,3 +2,4 @@ bin/
 mqm.exe
 dub.selections.json
 .dub
+data/hyper_*.txt
