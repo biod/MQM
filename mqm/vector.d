@@ -3,111 +3,45 @@
  * \brief Array type definition
  *
  * <i>Copyright (c) 2012</i> Danny Arends<br>
- * Last modified May, 2012<br>
+ * Last modified Feb, 2019<br>
  * First written May, 2011<br>
  * Written in the D Programming Language (http://www.digitalmars.com/d)
  **********************************************************************/
 module mqm.vector;
-import core.memory, std.random, std.conv;
 
+import std.conv : to;
+import std.string: format;
+import std.stdio : writeln;
+
+import mqm.io : abort, expect;
+
+/* Create a new vector, holding T init as value */
 pure T[] newvector(T)(size_t length, T value = T.init){
   T[] x;
-  for(size_t j=0;j<length;j++){ x ~= value; }
+  for (size_t j = 0; j < length; j++) { x ~= value; }
   return x;
 }
 
-void freevector(T)(ref T[] v) {
-  GC.removeRange(cast(void*)v);
-  GC.free(cast(void*)v);
-}
-
-T sumvector(T)(in T[] v){
+/* Sum of a vector */
+@nogc T sum(T)(in T[] v) nothrow {
   T sum = to!T(0);
-  foreach(e;v){ sum += e; }
+  foreach(e; v){ sum += e; }
   return sum;
 }
 
-pure T[] copyvector(T)(in T[] c){
-  T[] x;
-  x.length = c.length;
-  for(size_t j=0; j < c.length;j++){
-    x[j]=c[j];
+unittest {
+  writeln("Unit test: ", __FILE__);
+  try {
+    double[] a = newvector!double(5, 2.0f);
+    expect(a[1] == 2.0f, "Expected a[1] to be 2.0f, was '%s'", a[1]);
+    expect(a.sum == 10.0f, "Expected a.sum to be 10.0f, was '%s'", a.sum);
+
+    double[] b = newvector!double(15, 5.0f);
+    expect(b[1] == 5.0f, "Expected b[1] to be 5.0f, was '%s'", b[1]);
+    expect(b.sum == 75.0f, "Expected b.sum to be 75.0f, was '%s'", b.sum);
+    writeln("OK: ",__FILE__);  
+  } catch (Throwable e) {
+    abort(format(" - %s\nFAILED: %s", to!string(e), __FILE__), -1);
   }
-  return x;
 }
-
-/*
- * Splits a string by sep, and transforms each element to types of T
- */
-T[] stringToVector(T)(string s, string sep= ","){
-  string[] entities = s.split(sep);
-  return stringToVector!T(entities);
-}
-
-/*
- * Convert a string vector to a vector of type T
- */
-T[] stringToVector(T)(in string[] entities){
-  T[] rowleveldata;
-  for(size_t e=0; e < entities.length; e++){
-    try{
-      rowleveldata ~= to!T(entities[e]);
-    }catch(Throwable e){ 
-      rowleveldata ~= T.init;
-    }
-  }
-  return rowleveldata;
-}
-
-/*
- * Convert a vector of type T to a string
- */
-string arrayToString(T)(in T[] entities, string sep = ":", bool conv=false){
-  string retdata;
-  for(auto e=0;e < entities.length; e++){
-    if(e != 0) retdata ~= sep;
-    if(conv){
-      retdata ~= to!char(entities[e]);
-    }else{
-      retdata ~= to!string(entities[e]);
-    }
-  }
-  return retdata;
-}
-
-T[] toType(T)(in ubyte[] buffer){
-  T[] returnbuffer;
-  foreach(int i, byte b ; buffer){
-    returnbuffer ~= to!T(b);
-  }
-  return returnbuffer;
-}
-
-string toD(int x, size_t d = 6){
-  string s = to!string(x);
-  while(s.length < d){ s = "0" ~ s; }
-  return s;
-}
-
-pure size_t[] dorange(uint start, size_t length){
-  size_t[] array;
-  array.length = length;
-  for(size_t i = 0; i < (length-1); i++){
-    array[i] = start+i;
-  }
-  return array;
-}
-
-pure T getIe(T)(size_t cnt, in T[] range){
-  size_t l = range.length;
-  if(cnt < l) return range[cnt];
-  return getIe(cnt-l, range);
-}
-
-pure uint getI(T)(size_t cnt, in T[] range){
-  size_t l = range.length;
-  if(cnt < l) return cnt;
-  return (l-1);
-}
-
 
